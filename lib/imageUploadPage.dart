@@ -1,14 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image/image.dart' as img;
 import 'package:widget_mask/widget_mask.dart';
 
-
-
 class ImageUploadScreen extends StatefulWidget {
+  const ImageUploadScreen({super.key});
+
   @override
   _ImageUploadScreenState createState() => _ImageUploadScreenState();
 }
@@ -16,160 +14,181 @@ class ImageUploadScreen extends StatefulWidget {
 class _ImageUploadScreenState extends State<ImageUploadScreen> {
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
+  String maskPath = "asset/0.png";
 
   Future<void> _chooseFromDevice() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    setState(() {
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = pickedFile;
+      });
       showPopup(pickedFile);
-    });
+    }
   }
 
-  Image? _image;
-  String maskPath = "asset/0.png";
+  void _useThisImage(XFile? pickedFile) {
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = pickedFile;
+      });
+    }
+    Navigator.pop(context);
+  }
 
   void showPopup(XFile? pickedFile) {
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, st) {
-          return AlertDialog(
-            contentPadding: EdgeInsets.zero,
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: const CircleAvatar(
-                    backgroundColor: Colors.grey,
-                    child: Icon(
-                      Icons.close,
-                      color: Colors.white,
+      builder: (context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                icon: const CircleAvatar(
+                  backgroundColor: Colors.grey,
+                  child: Icon(
+                    Icons.close,
+                    color: Colors.white,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          ),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Uploaded Image",
+                    style: TextStyle(
+                      color: Colors.black45,
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                )
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  "Uploaded Image",
-                  style: TextStyle(
-                    color: Colors.black45,
+                  const SizedBox(
+                    height: 5,
                   ),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                pickedFile == null
-                    ? const Text('Upload Image')
-                    : maskPath != "asset/0.png"
-                        ? WidgetMask(
-                            blendMode: BlendMode.dstIn,
-                            childSaveLayer: true,
-                            mask: Image.asset(
-                              maskPath,
-                              fit: BoxFit.cover,
-                            ),
-                            child: Image.file(
-                              File(pickedFile.path),
-                              height: 300,
-                            ),
-                          )
-                        : Image.file(
-                            File(pickedFile.path),
-                            height: 300,
+                  pickedFile == null
+                      ? const Text('Upload Image')
+                      : maskPath != "asset/0.png"
+                      ? WidgetMask(
+                    blendMode: BlendMode.dstIn,
+                    childSaveLayer: true,
+                    mask: Image.asset(
+                      maskPath,
+                      fit: BoxFit.cover,
+                    ),
+                    child: Image.file(
+                      File(pickedFile.path),
+                      height: 300,
+                    ),
+                  )
+                      : Image.file(
+                    File(pickedFile.path),
+                    height: 300,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CropButton(
+                          "Original",
+                          null,
+                          0,
+                          setState,
+                        ),
+                      ),
+                      Expanded(
+                        child: CropButton(
+                          null,
+                          Image.asset(
+                            "asset/user_image_frame_1.png",
+                            scale: 0.5,
                           ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: CropButton(
-                        "Original",
-                        null,
-                        0,
-                        st,
-                      ),
-                    ),
-                    Expanded(
-                      child: CropButton(
-                        null,
-                        Image.asset(
-                          "asset/user_image_frame_1.png",
-                          scale: 0.5,
+                          1,
+                          setState,
                         ),
-                        1,
-                        st,
                       ),
-                    ),
-                    Expanded(
-                      child: CropButton(
-                        null,
-                        Image.asset(
-                          "asset/user_image_frame_2.png",
-                          scale: 0.5,
+                      Expanded(
+                        child: CropButton(
+                          null,
+                          Image.asset(
+                            "asset/user_image_frame_2.png",
+                            scale: 0.5,
+                          ),
+                          2,
+                          setState,
                         ),
-                        2,
-                        st,
                       ),
-                    ),
-                    Expanded(
-                      child: CropButton(
-                        null,
-                        Image.asset(
-                          "asset/user_image_frame_3.png",
-                          scale: 0.5,
+                      Expanded(
+                        child: CropButton(
+                          null,
+                          Image.asset(
+                            "asset/user_image_frame_3.png",
+                            scale: 0.5,
+                          ),
+                          3,
+                          setState,
                         ),
-                        3,
-                        st,
                       ),
-                    ),
-                    Expanded(
-                      child: CropButton(
-                        null,
-                        Image.asset(
-                          "asset/user_image_frame_4.png",
-                          scale: 0.5,
+                      Expanded(
+                        child: CropButton(
+                          null,
+                          Image.asset(
+                            "asset/user_image_frame_4.png",
+                            scale: 0.5,
+                          ),
+                          4,
+                          setState,
                         ),
-                        4,
-                        st,
                       ),
+                    ],
+                  ),
+                  ElevatedButton(
+                    onPressed: () => _useThisImage(pickedFile),
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                        ),
+                      ),
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.teal),
                     ),
-                  ],
-                )
-              ],
-            ),
-          );
-        }
-      ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text('Use this image'),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
-  Widget CropButton(String? text, Image? image, int index, void fun) {
+  Widget CropButton(
+      String? text, Image? image, int index, StateSetter setState) {
     return GestureDetector(
-      onTap: () async {
-        if (index == 1) {
-          setState(() {
+      onTap: () {
+        setState(() {
+          if (index == 1) {
             maskPath = "asset/user_image_frame_1.png";
-          });
-        } else if (index == 2) {
-          setState(() {
+          } else if (index == 2) {
             maskPath = "asset/user_image_frame_2.png";
-          });
-        } else if (index == 3) {
-          setState(() {
+          } else if (index == 3) {
             maskPath = "asset/user_image_frame_3.png";
-          });
-        } else if (index == 4) {
-          setState(() {
+          } else if (index == 4) {
             maskPath = "asset/user_image_frame_4.png";
-          });
-        } else {
-          setState(() {
+          } else {
             maskPath = "asset/0.png";
-          });
-        }
+          }
+        });
       },
       child: Container(
         margin: const EdgeInsets.all(5),
@@ -183,9 +202,9 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
         child: text == null
             ? image
             : Text(
-                text,
-                style: const TextStyle(color: Colors.black45, fontSize: 12),
-              ),
+          text,
+          style: const TextStyle(color: Colors.black45, fontSize: 12),
+        ),
       ),
     );
   }
@@ -228,23 +247,36 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                       padding: const EdgeInsets.all(8.0),
                       child: _imageFile == null
                           ? const Text('Upload Image')
+                          : maskPath != "asset/0.png"
+                          ? WidgetMask(
+                        blendMode: BlendMode.dstIn,
+                        childSaveLayer: true,
+                        mask: Image.asset(
+                          maskPath,
+                          fit: BoxFit.cover,
+                        ),
+                        child: Image.file(
+                          File(_imageFile!.path),
+                          height: 300,
+                        ),
+                      )
                           : Image.file(
-                              File(_imageFile!.path),
-                              height: 300,
-                            ),
+                        File(_imageFile!.path),
+                        height: 300,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: _chooseFromDevice,
                       style: ButtonStyle(
                         shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                        MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5.0),
                           ),
                         ),
                         backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.teal),
+                        MaterialStateProperty.all<Color>(Colors.teal),
                       ),
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),

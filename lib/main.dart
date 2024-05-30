@@ -1,4 +1,5 @@
 import 'package:celebrare/imageUploadPage.dart';
+import 'package:celebrare/splashScreen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -10,7 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ImageUploadScreen(),
+      home: Splash(),
     );
   }
 }
